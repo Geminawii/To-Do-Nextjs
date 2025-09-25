@@ -1,7 +1,7 @@
 "use client";
 
-import { DndContext, useDroppable, useDraggable } from "@dnd-kit/core";
-import { useState, useEffect } from "react";
+import { DndContext} from "@dnd-kit/core";
+import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Icon } from "@iconify/react";
@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import TaskItem from "@/components/TaskItem";
 import { toast } from "sonner";
 import AddTodo from "@/components/modals/AddToDo";
-import { useUserData } from "@/hooks/useUserData";
 import Greeting from "./common/Greeting";
 import ChatBot from "./common/Chatbot";
 import { DraggableTodo } from "@/components/common/DragToDo";
@@ -28,6 +27,7 @@ export interface Todo {
   id: string | number;
   todo: string;
   completed: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -54,7 +54,7 @@ export async function fetchAllTodos(): Promise<{ todos: Todo[] }> {
   return { todos: [...localTodos, ...apiTodos] };
 }
 
-function MainContent({ user, searchTerm, filter }: MainContentProps) {
+function MainContent({ searchTerm, filter }: MainContentProps) {
   const [page, setPage] = useState<number>(1);
   const [isAddOpen, setIsAddOpen] = useState<boolean>(false);
   const [selectedTodos, setSelectedTodos] = useState<(string | number)[]>([]);
@@ -83,6 +83,7 @@ function MainContent({ user, searchTerm, filter }: MainContentProps) {
       if (filter === "completed") return task.completed;
       if (filter === "incomplete") return !task.completed;
       return true;
+
     });
 
   const pageSize = 10;
@@ -97,6 +98,7 @@ function MainContent({ user, searchTerm, filter }: MainContentProps) {
   };
 
   const handleDelete = async (ids: (string | number)[]) => {
+    console.log(isAddOpen);
     try {
       for (const id of ids) {
         if (parseInt(String(id)) <= 150) {
@@ -299,7 +301,7 @@ function MainContent({ user, searchTerm, filter }: MainContentProps) {
                 </>
               ) : (
                 <p className="text-gray-500">
-                  Great Job! You've completed all tasks.
+                  Great Job! You have completed all tasks.
                 </p>
               )}
             </CardContent>

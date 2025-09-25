@@ -36,21 +36,6 @@ const TaskItem: React.FC<TaskProps> = ({
     id: uniqueId,
   });
 
-  const handleToggleComplete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleComplete?.(task.id);
-  };
-
-  const handleEditClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEditTask?.(task);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDeleteTask?.(task.id);
-  };
-
   return (
     <div
       ref={setNodeRef}

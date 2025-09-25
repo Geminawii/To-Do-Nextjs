@@ -7,7 +7,7 @@ type DropZoneProps = {
   children?: React.ReactNode; 
 };
 
-export function DropZone({ onDrop, children }: DropZoneProps) {
+export function DropZone({ children }: DropZoneProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: "delete-zone",
   });

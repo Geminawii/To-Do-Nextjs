@@ -1,5 +1,4 @@
-'use client'
-
+"use client";
 
 import React from "react";
 import { Button } from "../components/ui/button";
@@ -10,10 +9,13 @@ const NotFound: React.FC = () => {
 
   return (
     <div className="h-screen flex flex-col items-center justify-center space-y-6 bg-orange-50 text-center p-6">
-      <h1 className="text-4xl font-bold text-orange-900">404 - Page Not Found</h1>
+      <h1 className="text-4xl font-bold text-orange-900">
+        404 - Page Not Found
+      </h1>
       <p className="text-orange-800 text-lg">
-        The page you're looking for doesn't exist.
+        The page you&apos;re looking for doesn&apos;t exist.
       </p>
+
       <Button
         onClick={() => router.push("/dashboard")}
         className="mt-4"

@@ -33,7 +33,6 @@ export default function AddTodo({ closeModal }: AddTodoProps) {
   const [loading, setLoading] = useState(false);
   const [userId] = useState(1);
 
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {

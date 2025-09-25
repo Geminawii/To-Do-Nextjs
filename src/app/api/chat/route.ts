@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Fuse from "fuse.js";
 
+interface ChatMessage {
+  role: "user" | "bot";
+  content: string;
+}
+
 export async function POST(req: NextRequest) {
   const API_KEY = process.env.API_KEY;
 
@@ -23,9 +28,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-
     const faqAnswers: Record<string, string> = {
-        "what is justdoeet": `
+      "what is justdoeet": `
 This is dedicated to helping you plan and categorise yout daily tasks. Click on the plus sign to begin :D
 `,
 
@@ -77,19 +81,16 @@ To log out:
 Use the 'Logout' link in the sidebar menu.
 `,
 
-
       "thank you": `
 You're welcome! :)
 `,
     };
 
-  
     const latestMessageRaw = messages[messages.length - 1]?.content || "";
     const normalizedMessage = latestMessageRaw
       .toLowerCase()
       .replace(/[^\w\s]/g, "")
       .trim();
-
 
     for (const [faqKey, answer] of Object.entries(faqAnswers)) {
       if (normalizedMessage.includes(faqKey)) {
@@ -97,20 +98,22 @@ You're welcome! :)
       }
     }
 
-
     const fuse = new Fuse(Object.keys(faqAnswers), {
-      threshold: 0.4, 
+      threshold: 0.4,
     });
 
     const result = fuse.search(normalizedMessage);
-    if (result.length > 0 && result[0].score !== undefined && result[0].score <= 0.4) {
+    if (
+      result.length > 0 &&
+      result[0].score !== undefined &&
+      result[0].score <= 0.4
+    ) {
       const bestMatchKey = result[0].item;
       const answer = faqAnswers[bestMatchKey];
       return NextResponse.json({ reply: answer });
     }
 
- 
-    const contents = messages.map((msg: any) => ({
+    const contents = (messages as ChatMessage[]).map((msg) => ({
       role: msg.role === "bot" ? "model" : "user",
       parts: [{ text: msg.content }],
     }));

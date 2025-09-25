@@ -59,7 +59,7 @@ export async function assignTodoToCategory(todoId: number | string, categoryId: 
 export async function getTodosByCategory(categoryId: number): Promise<number[]> {
   const extended: ExtendedTodos = (await localforage.getItem(EXTENDED_TODOS_KEY)) || {};
   return Object.entries(extended)
-    .filter(([_, data]) => data.categories?.includes(categoryId))
+    .filter(([, data]) => data.categories?.includes(categoryId))
     .map(([id]) => parseInt(id, 10));
 }
 

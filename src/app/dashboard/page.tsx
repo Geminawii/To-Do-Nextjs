@@ -7,6 +7,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import MainContent from "@/components/MainContent";
 import localforage from "localforage";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type User = any;
 
 const Dashboard: React.FC = () => {

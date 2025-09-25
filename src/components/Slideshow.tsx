@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 interface Slide {
   image: string;
@@ -31,7 +32,9 @@ const Slideshow: React.FC<SlideshowProps> = ({ images, interval = 8000 }) => {
       aria-label="Image slideshow"
       className="w-full h-full flex flex-col items-center justify-center text-center space-y-4 px-4"
     >
-      <img
+      <Image
+        width={400}
+        height={400}
         src={images[index].image}
         alt={`Slide ${index + 1}`}
         className={`max-w-full max-h-[60vh] object-contain rounded-lg shadow-xl transform transition-all duration-1000 ${
@@ -49,7 +52,6 @@ const Slideshow: React.FC<SlideshowProps> = ({ images, interval = 8000 }) => {
       <div
         className="flex gap-2 mt-2"
         role="tablist"
-        aria-label="Slide indicators"
       >
         {images.map((_, i) => (
           <button
