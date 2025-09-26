@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import localforage from "localforage";
 import type { Todo } from "@/types/todo";
 import Image from "next/image";
+import MotionWrapper from "@/components/common/MotionWrapper";
 
 
 async function fetchTodo(id: string | number): Promise<Todo> {
@@ -144,6 +145,7 @@ export default function TodoDetailPage() {
       <Navbar />
       <div className="flex mt-2 sm:mt-5">
         <main className="flex-1 p-4 sm:p-6">
+          <MotionWrapper>
           <Card className="max-w-4xl w-full mx-auto shadow-md">
             <CardContent className="p-4 sm:p-6 flex flex-col gap-4">
               <div>
@@ -329,6 +331,7 @@ export default function TodoDetailPage() {
               </ul>
             </CardContent>
           </Card>
+          </MotionWrapper>
         </main>
       </div>
     </div>

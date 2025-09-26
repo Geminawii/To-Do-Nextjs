@@ -96,7 +96,7 @@ export default function Login() {
             </div>
 
             <Button
-              onClick={() => setShowForm(false)}
+              onClick={() => setShowForm(true)}
               className="mt-10 w-full bg-amber-800 text-white"
             >
               Login
