@@ -20,7 +20,24 @@
 - 📱 **Responsive Layout**: Optimized for desktop, tablet, and mobile screens.
 - **justaskeet**: A chatbot powered by Gemini AI to answer FAQs regarding the app.
 
+## 🧠justaskeet!
+justaskeet! is a friendly chatbot assistant powered by Gemini 2.5 Pro. It's designed to help users navigate and interact with the justdoeet! app by answering common questions and guiding them through actions like adding, editing, or deleting to-dos and categories.
 
+💡 **Key Features**
+
+**Task Guidance:** Offers clear, step-by-step instructions for common app features — such as creating tasks, managing categories, filtering, editing, or deleting items.
+**Conversational Help:** Communicates with a friendly tone and supports multilingual responses.
+**Fallback Support:** When Gemini’s API usage limit is reached, the chatbot falls back to an FAQ-based response system powered by Fuse.js to handle basic queries.
+
+**Limitations:**
+- The chatbot cannot perform actions like adding or editing tasks — it can only guide users through the steps.
+- No media generation — this model does not support generating images or videos.
+
+- **Powered by Gemini 2.5 Pro:**
+RPM (Requests per minute): 150
+Batch Enqueued Tokens: 5,000,000
+
+Gemini 2.5 is free to use, but subject to rate limits.
 
 ## 🧭 Pages Overview
 
@@ -82,6 +99,8 @@
 - **DnD Kit** – Drag-and-drop to delete tasks
 - **DummyJSON API** – Simulated todo API for read/write operations
 - **Fuse JS** - To support the chatbot
+- **React Framer Motion** - For smoother animations when navigating between pages
+- **React Markdown** - For italics and bold texts used by justaskeet! chatbot
 
 ---
 
@@ -110,6 +129,9 @@
 ![Mobile Login Page](./mobilelogin.png)
 ![Mobile Categories View](./mobilecat.png)
 ![Detailed ToDo Page](./todo.png)
+![justaskeet! support and abilities](./jat1.png)
+![justaskeet! support and abilities](./jat2.png)
+![justaskeet! support and abilities](./jdt.png)
 
 
 ## ⚠ Known Issues / Limitations
