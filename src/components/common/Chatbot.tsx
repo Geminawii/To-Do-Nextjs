@@ -89,7 +89,7 @@ export default function Chatbot() {
         className="fixed bottom-4 right-4 w-12 h-12 rounded-full bg-white border border-orange-300 shadow-lg flex items-center justify-center cursor-pointer"
         aria-label="Open chat"
       >
-        <span className="text-orange-800 font-bold text-lg">J</span>
+        <span className="text-orange-800 font-bold text-lg">j</span>
       </button>
     );
   }
