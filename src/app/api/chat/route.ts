@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const faqAnswers: Record<string, string> = {
       "what is justdoeet": `
-This is dedicated to helping you plan and categorise yout daily tasks. Click on the plus sign to begin :D
+This is dedicated to helping you plan and categorise your daily tasks. Click on the plus sign to begin :D
 `,
 
       "how do i add a new category": `
