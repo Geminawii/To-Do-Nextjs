@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
+import ReactMarkdown from "react-markdown";
 
 type Message = {
   role: "user" | "bot";
@@ -115,7 +116,6 @@ export default function Chatbot() {
           </button>
         </div>
       </header>
-
       <main className="flex-1 p-3 overflow-y-auto space-y-2">
         {messages.map((msg, i) => (
           <div
@@ -126,9 +126,7 @@ export default function Chatbot() {
                 : "bg-orange-50 text-orange-800 self-start"
             }`}
           >
-            {msg.content.split("\n").map((line, idx) => (
-              <p key={idx}>{line}</p>
-            ))}
+            <ReactMarkdown>{msg.content}</ReactMarkdown>
           </div>
         ))}
 
