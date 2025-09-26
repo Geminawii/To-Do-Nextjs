@@ -25,9 +25,9 @@ justaskeet! is a friendly chatbot assistant powered by Gemini 2.5 Pro. It's desi
 
 💡 **Key Features**
 
-**Task Guidance:** Offers clear, step-by-step instructions for common app features — such as creating tasks, managing categories, filtering, editing, or deleting items.
-**Conversational Help:** Communicates with a friendly tone and supports multilingual responses.
-**Fallback Support:** When Gemini’s API usage limit is reached, the chatbot falls back to an FAQ-based response system powered by Fuse.js to handle basic queries.
+- **Task Guidance:** Offers clear, step-by-step instructions for common app features — such as creating tasks, managing categories, filtering, editing, or deleting items.
+- **Conversational Help:** Communicates with a friendly tone and supports multilingual responses.
+- **Fallback Support:** When Gemini’s API usage limit is reached, the chatbot falls back to an FAQ-based response system powered by Fuse.js to handle basic queries.
 
 **Limitations:**
 - The chatbot cannot perform actions like adding or editing tasks — it can only guide users through the steps.
