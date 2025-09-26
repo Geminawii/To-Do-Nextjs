@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +7,6 @@ import { LoaderComp } from "@/components/common/Loader";
 import { toast } from "sonner";
 import localforage from "localforage";
 import { useQueryClient } from "@tanstack/react-query";
-
 
 interface Todo {
   id: string;
@@ -19,7 +17,6 @@ interface Todo {
   priority: "low" | "medium" | "high" | "";
   description: string;
 }
-
 
 interface AddTodoProps {
   closeModal?: () => void;
@@ -52,8 +49,8 @@ export default function AddTodo({ closeModal }: AddTodoProps) {
         description,
       };
 
- 
-      const todos: Todo[] = (await localforage.getItem<Todo[]>("localTodos")) || [];
+      const todos: Todo[] =
+        (await localforage.getItem<Todo[]>("localTodos")) || [];
 
       todos.push(newTodo);
       await localforage.setItem("localTodos", todos);
@@ -99,7 +96,6 @@ export default function AddTodo({ closeModal }: AddTodoProps) {
             />
           </div>
 
-     
           <div>
             <label className="block mb-1 text-sm font-medium">Due Date</label>
             <Input
@@ -153,7 +149,6 @@ export default function AddTodo({ closeModal }: AddTodoProps) {
               placeholder="Details about the task..."
             />
           </div>
-
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <LoaderComp size={20} /> : "Create Todo"}

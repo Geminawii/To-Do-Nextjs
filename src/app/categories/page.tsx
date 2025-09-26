@@ -18,6 +18,7 @@ import {
   Category as LocalCategory,
 } from "@/utils/localsstorage";
 import { Dialog, Transition, TransitionChild, DialogPanel, DialogTitle} from "@headlessui/react";
+import MotionWrapper from "@/components/common/MotionWrapper";
 
 
 interface Todo {
@@ -33,11 +34,11 @@ export default function CategoriesPage() {
   const [editValue, setEditValue] = useState<string>("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
-  ); // ✅ number
+  ); 
   const [search, setSearch] = useState<string>("");
   const [todosByCategory, setTodosByCategory] = useState<
     Record<number, Todo[]>
-  >({}); // ✅ keyed by number
+  >({}); 
 
   const queryClient = useQueryClient();
   const allTodos: Todo[] =
@@ -127,6 +128,7 @@ export default function CategoriesPage() {
         </div>
 
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 -mt-5">
+          <MotionWrapper>
           <div className="bg-white rounded-md shadow-md p-4 sm:p-6 min-h-[calc(100vh-5rem)]">
             <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-orange-800">
               Create A Category
@@ -236,6 +238,7 @@ export default function CategoriesPage() {
               ))}
             </div>
           </div>
+          </MotionWrapper>
         </main>
       </div>
 

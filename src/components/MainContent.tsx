@@ -1,6 +1,6 @@
 "use client";
 
-import { DndContext} from "@dnd-kit/core";
+import { DndContext } from "@dnd-kit/core";
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +14,6 @@ import TaskItem from "@/components/TaskItem";
 import { toast } from "sonner";
 import AddTodo from "@/components/modals/AddToDo";
 import Greeting from "./common/Greeting";
-import ChatBot from "./common/Chatbot";
 import { DraggableTodo } from "@/components/common/DragToDo";
 import { DropZone } from "./common/DropZone";
 import {
@@ -22,6 +21,7 @@ import {
   deleteLocalTodo,
   updateLocalTodo,
 } from "@/utils/localsstorage";
+import MotionWrapper from "./common/MotionWrapper";
 
 export interface Todo {
   id: string | number;
@@ -83,7 +83,6 @@ function MainContent({ searchTerm, filter }: MainContentProps) {
       if (filter === "completed") return task.completed;
       if (filter === "incomplete") return !task.completed;
       return true;
-
     });
 
   const pageSize = 10;
@@ -98,33 +97,52 @@ function MainContent({ searchTerm, filter }: MainContentProps) {
   };
 
   const handleDelete = async (ids: (string | number)[]) => {
-    console.log(isAddOpen);
     try {
+      const deletedApiTodos = new Set<string | number>(
+        ((await localforage.getItem("deletedApiTodos")) as (
+          | string
+          | number
+        )[]) || []
+      );
+
+      let localTodos: Todo[] = (await localforage.getItem("localTodos")) || [];
+
       for (const id of ids) {
-        if (parseInt(String(id)) <= 150) {
-          // Fake delete call to dummyjson
-          await fetch(`https://dummyjson.com/todos/${id}`, {
+        if (String(id).startsWith("local-")) {
+          localTodos = localTodos.filter((t) => t.id !== id);
+          await deleteLocalTodo(id); // optional if you want internal side-effects
+        } else {
+          // Remote API todo deletion
+          const res = await fetch(`https://dummyjson.com/todos/${id}`, {
             method: "DELETE",
           });
+          if (!res.ok) throw new Error(`Failed to delete todo ${id}`);
 
-          // Persist deleted IDs locally
-          const deleted: (string | number)[] =
-            (await localforage.getItem("deletedApiTodos")) || [];
-          await localforage.setItem("deletedApiTodos", [
-            ...new Set([...deleted, id]),
-          ]);
-        } else {
-          await deleteLocalTodo(id);
+          deletedApiTodos.add(id);
         }
+
+        // Update query cache after each delete
+        queryClient.setQueryData<{ todos: Todo[] } | undefined>(
+          ["todos"],
+          (old) =>
+            old ? { ...old, todos: old.todos.filter((t) => t.id !== id) } : old
+        );
+
+        // Remove individual todo query cache
+        queryClient.removeQueries({ queryKey: ["todo", id] });
       }
 
-      toast.success("Deleted.");
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      // Persist updates to localforage
+      await localforage.setItem("deletedApiTodos", Array.from(deletedApiTodos));
+      await localforage.setItem("localTodos", localTodos);
+
+      toast.success("Todos successfully deleted.");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to delete.");
+      toast.error("Failed to delete todos.");
+    } finally {
+      setSelectedTodos([]);
     }
-    setSelectedTodos([]);
   };
 
   const handleMarkAsCompleted = async () => {
@@ -185,158 +203,156 @@ function MainContent({ searchTerm, filter }: MainContentProps) {
       }}
     >
       <main className="p-4 bg-white rounded-md shadow-md relative w-full">
-        <Greeting />
-        <section aria-label="Uncompleted To-Dos">
-          <Card className="p-4 mb-6">
-            <CardHeader className="flex flex-col sm:items-center sm:justify-between gap-2 mb-2">
-              <h2 className="text-lg font-semibold">To-Do List</h2>
-              <div className="flex gap-2 items-start">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Add Todo"
-                    >
-                      <span>
+        <MotionWrapper>
+          <Greeting />
+          <section aria-label="Uncompleted To-Dos">
+            <Card className="p-4 mb-6">
+              <CardHeader className="flex flex-col sm:items-center sm:justify-between gap-2 mb-2">
+                <h2 className="text-lg font-semibold">To-Do List</h2>
+                <div className="flex gap-2 items-start">
+                  <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" aria-label="Add Todo">
                         <Icon
                           icon="mdi:plus"
                           className="w-5 h-5 text-orange-700"
                         />
-                      </span>
-                    </Button>
-                  </DialogTrigger>
+                      </Button>
+                    </DialogTrigger>
 
-                  <DialogContent>
-                    <AddTodo closeModal={() => setIsAddOpen(false)} />
-                  </DialogContent>
-                </Dialog>
+                    <DialogContent>
+                      <AddTodo closeModal={() => setIsAddOpen(false)} />
+                    </DialogContent>
+                  </Dialog>
 
-                <Button
-                  onClick={handleMarkAsCompleted}
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Mark as Completed"
-                  className="text-amber-700"
-                >
-                  <Icon icon="mdi:check-bold" className="w-5 h-5" />
-                </Button>
-
-                <DropZone onDrop={(id) => handleDelete([id])}>
                   <Button
-                    onClick={() =>
-                      selectedTodos.length && handleDelete(selectedTodos)
-                    }
+                    onClick={handleMarkAsCompleted}
                     variant="ghost"
                     size="icon"
-                    aria-label="Delete Selected"
-                    className="text-orange-700"
+                    aria-label="Mark as Completed"
+                    className="text-amber-700"
                   >
-                    <Icon icon="mdi:delete" className="w-5 h-5 -mt-3" />
+                    <Icon icon="mdi:check-bold" className="w-5 h-5" />
                   </Button>
-                </DropZone>
-              </div>
-            </CardHeader>
 
-            <CardContent>
-              {paginated.length > 0 ? (
-                <>
-                  {paginated.map((task, i) => (
-                    <DraggableTodo key={task.id} id={task.id}>
-                      <div className="flex items-center gap-2 mb-2 hover:bg-gray-100 p-2 rounded-md">
-                        <input
-                          type="checkbox"
-                          checked={selectedTodos.includes(task.id)}
-                          onChange={() => handleToggleSelect(task.id)}
-                          className="accent-orange-700"
-                        />
-                        <Link
-                          href={`/todo/${task.id}`}
-                          className="flex-1 block hover:underline"
-                        >
-                          <TaskItem
-                            task={task}
-                            index={(page - 1) * pageSize + i}
-                            isLocal={parseInt(String(task.id)) > 150}
-                          />
-                        </Link>
-                      </div>
-                    </DraggableTodo>
-                  ))}
-
-                  <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
+                  <DropZone onDrop={(id) => handleDelete([id])}>
                     <Button
-                      variant="outline"
-                      size="default"
-                      disabled={page <= 1}
-                      onClick={() => setPage((p) => p - 1)}
-                      className="text-orange-800"
+                      onClick={() =>
+                        selectedTodos.length && handleDelete(selectedTodos)
+                      }
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Delete Selected"
+                      className="text-orange-700"
                     >
-                      Prev
+                      <Icon icon="mdi:delete" className="w-5 h-5 -mt-3" />
                     </Button>
-                    {Array.from({ length: totalPages }).map((_, i) => (
-                      <Button
-                        key={i + 1}
-                        variant={page === i + 1 ? "default" : "outline"}
-                        size="default"
-                        onClick={() => setPage(i + 1)}
-                        className="text-orange-800"
-                        disabled={page === i + 1}
-                      >
-                        {i + 1}
-                      </Button>
+                  </DropZone>
+                </div>
+              </CardHeader>
+
+              <CardContent>
+                {paginated.length > 0 ? (
+                  <>
+                    {paginated.map((task, i) => (
+                      <DraggableTodo key={task.id} id={task.id}>
+                        <div className="flex items-center gap-2 mb-2 hover:bg-gray-100 p-2 rounded-md">
+                          <input
+                            type="checkbox"
+                            checked={selectedTodos.includes(task.id)}
+                            onChange={() => handleToggleSelect(task.id)}
+                            className="accent-orange-700"
+                          />
+                          <Link
+                            href={`/todo/${task.id}`}
+                            className="flex-1 block hover:underline"
+                          >
+                            <TaskItem
+                              task={task}
+                              index={(page - 1) * pageSize + i}
+                              isLocal={parseInt(String(task.id)) > 150}
+                            />
+                          </Link>
+                        </div>
+                      </DraggableTodo>
                     ))}
 
-                    <Button
-                      variant="outline"
-                      size="default"
-                      disabled={page >= totalPages}
-                      onClick={() => setPage((p) => p + 1)}
-                      className="text-orange-800"
-                    >
-                      Next
-                    </Button>
+                    <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
+                      <Button
+                        variant="outline"
+                        size="default"
+                        disabled={page <= 1}
+                        onClick={() => setPage((p) => p - 1)}
+                        className="text-orange-800"
+                      >
+                        Prev
+                      </Button>
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <Button
+                          key={i + 1}
+                          variant={page === i + 1 ? "default" : "outline"}
+                          size="default"
+                          onClick={() => setPage(i + 1)}
+                          className="text-orange-800"
+                          disabled={page === i + 1}
+                        >
+                          {i + 1}
+                        </Button>
+                      ))}
+
+                      <Button
+                        variant="outline"
+                        size="default"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                        className="text-orange-800"
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-gray-500">
+                    Great Job! You have completed all tasks.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </section>
+
+          <section aria-label="Progress Summary">
+            <Card className="p-4 sm:p-6">
+              <CardHeader>
+                <h2 className="text-lg font-semibold mb-4 text-orange-800">
+                  Task Progress
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4">
+                  <div className="flex justify-between mb-1 text-orange-800">
+                    <span>Completed</span>
+                    <span>{completedPercentage}%</span>
                   </div>
-                </>
-              ) : (
-                <p className="text-gray-500">
-                  Great Job! You have completed all tasks.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </section>
+                  <Progress
+                    value={completedPercentage}
+                    className="bg-orange-200 [&>div]:bg-orange-800"
+                  />
+                </div>
 
-        <section aria-label="Progress Summary">
-          <Card className="p-4 sm:p-6">
-            <CardHeader>
-              <h2 className="text-lg font-semibold mb-4 text-orange-800">
-                Task Progress
-              </h2>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <div className="flex justify-between mb-1 text-orange-800">
-                  <span>Completed</span>
-                  <span>{completedPercentage}%</span>
+                <div>
+                  <div className="flex justify-between mb-2 text-orange-800">
+                    <span>Pending</span>
+                    <span>{pendingPercentage}%</span>
+                  </div>
+                  <Progress
+                    value={pendingPercentage}
+                    className="bg-orange-200 [&>div]:bg-orange-800"
+                  />
                 </div>
-                <Progress value={completedPercentage} />
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-2 text-orange-800">
-                  <span>Pending</span>
-                  <span>{pendingPercentage}%</span>
-                </div>
-                <div className="[&>div]:bg-orange-900">
-                  <Progress value={pendingPercentage} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-        <ChatBot />
+              </CardContent>
+            </Card>
+          </section>
+        </MotionWrapper>
       </main>
     </DndContext>
   );

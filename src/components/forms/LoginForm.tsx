@@ -10,6 +10,7 @@ import Image from "next/image";
 import { LoaderComp } from "../common/Loader";
 import { useRouter } from "next/navigation";
 
+
 const avatars = [
   "/images/avatar-1.png",
   "/images/avatar-2.png",
@@ -35,20 +36,21 @@ export default function LoginForm() {
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
-    setIsLoggingIn(true);
-    setTimeout(() => {
-      const userData = {
-        username: data.username,
-        email: data.email,
-        avatar: selectedImage,
-      };
-      localStorage.setItem("userData", JSON.stringify(userData));
+ const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+  setIsLoggingIn(true);
 
-      setIsLoggingIn(false);
-      router.push("/dashboard");
-    }, 5000);
+  const userData = {
+    username: data.username,
+    email: data.email,
+    avatar: selectedImage,
   };
+  localStorage.setItem("userData", JSON.stringify(userData));
+
+  setTimeout(() => {
+    router.push("/dashboard");
+  }, 4000);
+};
+
 
   return (
     <form
