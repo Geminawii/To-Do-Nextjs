@@ -3,8 +3,7 @@ import "./globals.css";
 import { Quicksand } from "next/font/google";
 import { Providers } from "./providers";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
-import Chatbot from "@/components/common/Chatbot";
-
+import ClientLayout from "@/components/common/ClientLayout";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -26,10 +25,7 @@ export default function RootLayout({
       <body className={`${quicksand.variable} font-sans antialiased`}>
         <ErrorBoundary>
           <Providers>
-            <main>
-            {children}
-            <Chatbot />
-            </main>
+            <ClientLayout>{children}</ClientLayout>
           </Providers>
         </ErrorBoundary>
       </body>

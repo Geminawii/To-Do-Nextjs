@@ -1,7 +1,7 @@
 
 # justdooeet! – Todo List App 📝
 
-**justdooeet!** is a responsive, offline-capable Todo List web application built with **React** and **Vite**. It fetches data from the [DummyJSON Todos API](https://dummyjson.com) and enhances it with features like local persistence, task editing, filtering, and progress visualization.
+**justdooeet!** is a responsive, offline-capable Todo List web application built with **NextJS** and **Typescript**. It fetches data from the [DummyJSON Todos API](https://dummyjson.com) and enhances it with features like local persistence, task editing, filtering, and progress visualization.
 
 ---
 
@@ -19,6 +19,11 @@
 - ♿ **Accessibility**: Full keyboard navigation and ARIA support.
 - 📱 **Responsive Layout**: Optimized for desktop, tablet, and mobile screens.
 - **justaskeet**: A chatbot powered by Gemini AI to answer FAQs regarding the app.
+
+
+## justaskeet!
+
+This new feature serves as an interactive guide designed to assist users with questions about the app and its various functionalities. Powered by the Gemini AI 2.5 Pro model, it provides helpful and accurate answers focused primarily on to-do management. To ensure continuous support, a fallback mechanism using Fuse.js handles common to-do related questions whenever justaskeet! is unavailable—whether due to network issues or usage limits on the AI service tier.
 
 
 
@@ -110,6 +115,9 @@
 ![Mobile Login Page](./mobilelogin.png)
 ![Mobile Categories View](./mobilecat.png)
 ![Detailed ToDo Page](./todo.png)
+![justaskeet!](./jat1.png)
+![justaskeet!](./jat2.png)
+![justaskeet!](./jdt.png)
 
 
 ## ⚠ Known Issues / Limitations

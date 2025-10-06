@@ -21,9 +21,6 @@ interface TaskProps {
 
 const TaskItem: React.FC<TaskProps> = ({
   task,
-  onToggleComplete,
-  onEditTask,
-  onDeleteTask,
   isLocal,
 }) => {
   const isComplete = task.completed;

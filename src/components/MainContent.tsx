@@ -110,7 +110,7 @@ function MainContent({ searchTerm, filter }: MainContentProps) {
       for (const id of ids) {
         if (String(id).startsWith("local-")) {
           localTodos = localTodos.filter((t) => t.id !== id);
-          await deleteLocalTodo(id); // optional if you want internal side-effects
+          await deleteLocalTodo(id);
         } else {
           // Remote API todo deletion
           const res = await fetch(`https://dummyjson.com/todos/${id}`, {
@@ -208,46 +208,56 @@ function MainContent({ searchTerm, filter }: MainContentProps) {
           <section aria-label="Uncompleted To-Dos">
             <Card className="p-4 mb-6">
               <CardHeader className="flex flex-col sm:items-center sm:justify-between gap-2 mb-2">
-                <h2 className="text-lg font-semibold">To-Do List</h2>
-                <div className="flex gap-2 items-start">
-                  <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label="Add Todo">
-                        <Icon
-                          icon="mdi:plus"
-                          className="w-5 h-5 text-orange-700"
-                        />
-                      </Button>
-                    </DialogTrigger>
+                <div className="flex flex-col items-center justify-center text-center space-y-2">
+                  <h2 className="text-lg font-semibold">To-Do List</h2>
 
-                    <DialogContent>
-                      <AddTodo closeModal={() => setIsAddOpen(false)} />
-                    </DialogContent>
-                  </Dialog>
+                  <div className="flex gap-2 items-center justify-center">
+                    <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Add Todo"
+                        >
+                          <Icon
+                            icon="mdi:plus"
+                            className="w-5 h-5 text-orange-700"
+                          />
+                        </Button>
+                      </DialogTrigger>
 
-                  <Button
-                    onClick={handleMarkAsCompleted}
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Mark as Completed"
-                    className="text-amber-700"
-                  >
-                    <Icon icon="mdi:check-bold" className="w-5 h-5" />
-                  </Button>
+                      <DialogContent>
+                        <AddTodo closeModal={() => setIsAddOpen(false)} />
+                      </DialogContent>
+                    </Dialog>
 
-                  <DropZone onDrop={(id) => handleDelete([id])}>
                     <Button
-                      onClick={() =>
-                        selectedTodos.length && handleDelete(selectedTodos)
-                      }
+                      onClick={handleMarkAsCompleted}
                       variant="ghost"
                       size="icon"
-                      aria-label="Delete Selected"
-                      className="text-orange-700"
+                      aria-label="Mark as Completed"
+                      className="text-amber-700"
                     >
-                      <Icon icon="mdi:delete" className="w-5 h-5 -mt-3" />
+                      <Icon icon="mdi:check-bold" className="w-5 h-5" />
                     </Button>
-                  </DropZone>
+
+                    <DropZone onDrop={(id) => handleDelete([id])}>
+                      <div className="relative">
+                        <Button
+                          onClick={() => {
+                            if (selectedTodos.length)
+                              handleDelete(selectedTodos);
+                          }}
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Delete Selected"
+                          className="text-orange-700"
+                        >
+                          <Icon icon="mdi:delete" className="w-5 h-5" /> 
+                        </Button>
+                      </div>
+                    </DropZone>
+                  </div>
                 </div>
               </CardHeader>
 
@@ -277,43 +287,71 @@ function MainContent({ searchTerm, filter }: MainContentProps) {
                       </DraggableTodo>
                     ))}
 
-                    <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
-                      <Button
-                        variant="outline"
-                        size="default"
-                        disabled={page <= 1}
-                        onClick={() => setPage((p) => p - 1)}
-                        className="text-orange-800"
-                      >
-                        Prev
-                      </Button>
-                      {Array.from({ length: totalPages }).map((_, i) => (
+                    <div className="flex flex-col items-center justify-center gap-2 mt-4">
+                      <div className="flex sm:hidden items-center gap-2">
                         <Button
-                          key={i + 1}
-                          variant={page === i + 1 ? "default" : "outline"}
+                          variant="outline"
                           size="default"
-                          onClick={() => setPage(i + 1)}
+                          disabled={page <= 1}
+                          onClick={() => setPage((p) => p - 1)}
                           className="text-orange-800"
-                          disabled={page === i + 1}
                         >
-                          {i + 1}
+                          Prev
                         </Button>
-                      ))}
+                        <span className="text-orange-800 font-semibold px-2">
+                          {page}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          disabled={page >= totalPages}
+                          onClick={() => setPage((p) => p + 1)}
+                          className="text-orange-800"
+                        >
+                          Next
+                        </Button>
+                      </div>
 
-                      <Button
-                        variant="outline"
-                        size="default"
-                        disabled={page >= totalPages}
-                        onClick={() => setPage((p) => p + 1)}
-                        className="text-orange-800"
-                      >
-                        Next
-                      </Button>
+                      {/* Desktop Pagination: Full page numbers */}
+                      <div className="hidden sm:flex flex-wrap justify-center items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="default"
+                          disabled={page <= 1}
+                          onClick={() => setPage((p) => p - 1)}
+                          className="text-orange-800"
+                        >
+                          Prev
+                        </Button>
+
+                        {Array.from({ length: totalPages }).map((_, i) => (
+                          <Button
+                            key={i + 1}
+                            variant={page === i + 1 ? "default" : "outline"}
+                            size="default"
+                            onClick={() => setPage(i + 1)}
+                            className="text-orange-800"
+                            disabled={page === i + 1}
+                          >
+                            {i + 1}
+                          </Button>
+                        ))}
+
+                        <Button
+                          variant="outline"
+                          size="default"
+                          disabled={page >= totalPages}
+                          onClick={() => setPage((p) => p + 1)}
+                          className="text-orange-800"
+                        >
+                          Next
+                        </Button>
+                      </div>
                     </div>
                   </>
                 ) : (
                   <p className="text-gray-500">
-                    Great Job! You have completed all tasks.
+                    No To-Dos here. Click on the plus sign to begin!
                   </p>
                 )}
               </CardContent>

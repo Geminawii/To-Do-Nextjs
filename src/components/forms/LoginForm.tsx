@@ -10,7 +10,6 @@ import Image from "next/image";
 import { LoaderComp } from "../common/Loader";
 import { useRouter } from "next/navigation";
 
-
 const avatars = [
   "/images/avatar-1.png",
   "/images/avatar-2.png",
@@ -36,21 +35,20 @@ export default function LoginForm() {
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const router = useRouter();
 
- const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
-  setIsLoggingIn(true);
+  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+    setIsLoggingIn(true);
 
-  const userData = {
-    username: data.username,
-    email: data.email,
-    avatar: selectedImage,
+    const userData = {
+      username: data.username,
+      email: data.email,
+      avatar: selectedImage,
+    };
+    localStorage.setItem("userData", JSON.stringify(userData));
+
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 4000);
   };
-  localStorage.setItem("userData", JSON.stringify(userData));
-
-  setTimeout(() => {
-    router.push("/dashboard");
-  }, 4000);
-};
-
 
   return (
     <form
@@ -130,20 +128,20 @@ export default function LoginForm() {
 
           <div>
             <Label>Select an Avatar</Label>
-            <div className="flex gap-4 mt-2">
+            <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 justify-center">
               {avatars.map((avatar, index) => (
                 <button
                   key={index}
                   type="button"
                   onClick={() => setSelectedImage(avatar)}
                   aria-label={`Select avatar ${index + 1}`}
-                  className={`rounded-full border-2 p-1 transition ${
+                  className={`rounded-full border-2 p-0.5 sm:p-1 transition ${
                     selectedImage === avatar
                       ? "border-orange-900"
                       : "border-transparent"
                   }`}
                 >
-                  <Avatar className="w-12 h-12 relative">
+                  <Avatar className="h-10 w-10 sm:h-12 sm:w-12 relative">
                     <Image
                       src={avatar}
                       alt={`Avatar ${index + 1}`}
